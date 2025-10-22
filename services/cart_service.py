@@ -1,0 +1,54 @@
+# services/cart_service.py
+from typing import Dict, Any
+import requests
+
+
+class CartService:
+    """
+    Service class to handle all Storefront API operations related to the shopping cart.
+    Uses dependency injection for client and base URL.
+    """
+
+    def __init__(self, client: requests.Session, base_url: str, cart_token: str) -> None:
+        self.client = client
+        self.base_url = base_url
+        self.cart_endpoint = f"{self.base_url}/api/v2/storefront/cart"
+        self.cart_token = cart_token
+        self.cart_headers = {"X-Spree-Order-Token": self.cart_token}
+
+    def create_cart(self) -> Dict[str, Any]:
+        create_cart_response = requests.post(self.cart_endpoint)
+        create_cart_response.raise_for_status()
+        return create_cart_response.json()["data"]
+
+    def get_cart(self,)-> Dict[str, Any]:
+        get_cart_response = requests.get(self.cart_endpoint,
+                                         headers=self.cart_headers
+                                         )
+        get_cart_response.raise_for_status()
+        return get_cart_response.json()["data"]
+
+
+
+    def add_item(self, variant_id: str, quantity: int, cart_headers: Dict[str, str]) -> Dict[str, Any]:
+        """Adds a product variant to the cart."""
+        payload = {
+            "variant_id": variant_id,
+            "quantity": quantity
+        }
+        response = self.client.post(f"{self.cart_endpoint}/add", json=payload, headers=cart_headers)
+        response.raise_for_status()
+        return response.json()["data"]
+
+    def remove_item(self, item_id: str, cart_headers: Dict[str, str]) -> bool:
+        """Removes a line item from the cart."""
+        response = self.client.delete(f"{self.cart_endpoint}/items/{item_id}", headers=cart_headers)
+        if response.status_code == 200:
+            return True
+        response.raise_for_status()
+        return True  # will not reach here if error
+
+    def clear_cart(self, cart_headers: Dict[str, str]) -> bool:
+        """Deletes the entire cart."""
+        response = self.client.delete(self.cart_endpoint, headers=cart_headers)
+        return response.status_code in [204, 404]  # 404 is acceptable if already deleted
