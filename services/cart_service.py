@@ -43,8 +43,6 @@ class CartService:
         get_cart_response.raise_for_status()
         return get_cart_response.json()["data"]
 
-
-
     def add_item(self, variant_id: str, quantity: int, cart_headers: Dict[str, str]) -> Dict[str, Any]:
         """Adds a product variant to the cart."""
         payload = {
