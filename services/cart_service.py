@@ -1,5 +1,5 @@
 # services/cart_service.py
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import requests
 
 
@@ -9,16 +9,31 @@ class CartService:
     Uses dependency injection for client and base URL.
     """
 
-    def __init__(self, client: requests.Session, base_url: str, cart_token: str) -> None:
+    def __init__(self, client: requests.Session, base_url: str, cart_token:Optional[str] = None) -> None:
         self.client = client
         self.base_url = base_url
         self.cart_endpoint = f"{self.base_url}/api/v2/storefront/cart"
         self.cart_token = cart_token
-        self.cart_headers = {"X-Spree-Order-Token": self.cart_token}
+        self.cart_token = cart_token
+        self._update_headers_from_token()
+
+    def _update_headers_from_token(self) -> None:
+            if self.cart_token:
+                self.cart_headers = {"X-Spree-Order-Token": self.cart_token}
+            else:
+                self.cart_headers = {}
+
 
     def create_cart(self) -> Dict[str, Any]:
         create_cart_response = requests.post(self.cart_endpoint)
         create_cart_response.raise_for_status()
+        # Extract token from response attributes if present
+        data=create_cart_response.json()["data"]
+        token = data.get("attributes", {}).get("token")
+        if token:
+            self.cart_token = token
+            self._update_headers_from_token()
+
         return create_cart_response.json()["data"]
 
     def get_cart(self,)-> Dict[str, Any]:

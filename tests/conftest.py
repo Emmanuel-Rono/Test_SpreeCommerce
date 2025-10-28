@@ -4,7 +4,7 @@ import pytest
 import requests
 from typing import Dict, Any
 from config.settings import settings
-
+from services.cart_service import CartService
 
 
 @pytest.fixture(scope="session")
@@ -58,10 +58,20 @@ def customer_cart(api_client: requests.Session, base_url: str) -> Dict[str, Any]
     }
 
     yield cart_details
-
     # TEARDOWN
     delete_response = api_client.delete(cart_endpoint, headers=cart_auth_headers)
     if delete_response.status_code not in [204, 404]:
         pytest.fail(f"Failed to delete cart {cart_id} during teardown.")
+
+@pytest.fixture(scope="session")
+def cart_service(api_client:requests.Session, base_url:str) -> CartService:
+        # 1. The instantiation happens here!
+        service = CartService(
+            client=api_client,
+            base_url=base_url
+        )
+        return service
+
+
 
 
