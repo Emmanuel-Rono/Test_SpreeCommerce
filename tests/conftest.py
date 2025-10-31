@@ -6,12 +6,6 @@ from typing import Dict, Any
 from config.settings import settings
 from services.cart_service import CartService
 
-
-@pytest.fixture(scope="session")
-def base_url() -> str:
-    return settings.BASE_API_URL
-
-
 @pytest.fixture(scope="session")
 def api_client(base_url: str) -> requests.Session:
     session = requests.Session()
@@ -20,6 +14,13 @@ def api_client(base_url: str) -> requests.Session:
         "Accept": "application/vnd.api+json"
     })
     return session
+
+
+@pytest.fixture(scope="session")
+def base_url() -> str:
+    return settings.BASE_API_URL
+
+
 
 
 @pytest.fixture(scope="session")
@@ -71,6 +72,10 @@ def cart_service(api_client:requests.Session, base_url:str) -> CartService:
             base_url=base_url
         )
         return service
+
+@pytest.fixture
+def cart_headers(cart_service: CartService):
+    return cart_service.cart_headers
 
 
 
