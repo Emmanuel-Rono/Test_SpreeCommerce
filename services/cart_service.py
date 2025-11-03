@@ -49,7 +49,7 @@ class CartService:
             "variant_id": variant_id,
             "quantity": quantity
         }
-        response = self.client.post(f"{self.cart_endpoint}/add", json=payload, headers=cart_headers)
+        response = self.client.post(f"{self.cart_endpoint}/add_item", json=payload, headers=cart_headers)
         response.raise_for_status()
         return response.json()["data"]
 
