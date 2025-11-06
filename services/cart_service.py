@@ -5,7 +5,7 @@ import requests
 
 class CartService:
     """
-    Service class to handle all Storefront API operations related to the shopping cart.
+    Servic class to handle all Storefront API operations related to the shopping cart.
     Uses dependency injection for client and base URL.
     """
 
@@ -14,18 +14,21 @@ class CartService:
         self.base_url = base_url
         self.cart_endpoint = f"{self.base_url}/api/v2/storefront/cart"
         self.cart_token = cart_token
-        self.cart_token = cart_token
+        self.cart_headers = {
+            "Content-Type": "application/vnd.api+json",
+            "Accept": "application/vnd.api+json"
+        }
         self._update_headers_from_token()
 
     def _update_headers_from_token(self) -> None:
-            if self.cart_token:
-                self.cart_headers = {"X-Spree-Order-Token": self.cart_token}
-            else:
+        if self.cart_token:
+            self.cart_headers["X-Spree-Order-Token"] = self.cart_token
+        else:
                 self.cart_headers = {}
 
 
     def create_cart(self) -> Dict[str, Any]:
-        create_cart_response = requests.post(self.cart_endpoint)
+        create_cart_response = self.client.post(self.cart_endpoint)
         create_cart_response.raise_for_status()
         # Extract token from response attributes if present
         data=create_cart_response.json()["data"]
@@ -43,13 +46,13 @@ class CartService:
         get_cart_response.raise_for_status()
         return get_cart_response.json()["data"]
 
-    def add_item(self, variant_id: str, quantity: int, cart_headers: Dict[str, str]) -> Dict[str, Any]:
+    def add_item(self, variant_id: str, quantity: int) -> Dict[str, Any]:
         """Adds a product variant to the cart."""
         payload = {
             "variant_id": variant_id,
             "quantity": quantity
         }
-        response = self.client.post(f"{self.cart_endpoint}/add_item", json=payload, headers=cart_headers)
+        response = self.client.post(f"{self.cart_endpoint}/add_item", json=payload, headers=self.cart_headers)
         response.raise_for_status()
         return response.json()["data"]
 

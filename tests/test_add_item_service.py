@@ -1,16 +1,13 @@
 from services.cart_service import CartService
 from typing import Dict, Any
 
-
-
 def test_add_item_service(cart_service:CartService):
     cart_service.create_cart()
-    cart_headers = cart_service.cart_headers
 
     variant_id = "3"
     quantity = 2
 
-    add_item_service_response= cart_service.add_item (variant_id, quantity, cart_headers)
+    add_item_service_response= cart_service.add_item (variant_id, quantity)
 
     assert isinstance(add_item_service_response, dict), f"Expected Dict got: {type(add_item_service_response)}"
 
