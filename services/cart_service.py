@@ -26,18 +26,19 @@ class CartService:
         else:
                 self.cart_headers = {}
 
-
     def create_cart(self) -> Dict[str, Any]:
-        create_cart_response = self.client.post(self.cart_endpoint)
-        create_cart_response.raise_for_status()
-        # Extract token from response attributes if present
-        data=create_cart_response.json()["data"]
+        url = f"{self.cart_endpoint}?fields[cart]=number,token"
+        response = self.client.post(url)
+        response.raise_for_status()
+        data = response.json()["data"]
+
+        # Capture the token
         token = data.get("attributes", {}).get("token")
         if token:
             self.cart_token = token
             self._update_headers_from_token()
 
-        return create_cart_response.json()["data"]
+        return data
 
     def get_cart(self,)-> Dict[str, Any]:
         get_cart_response = requests.get(self.cart_endpoint,
@@ -47,12 +48,17 @@ class CartService:
         return get_cart_response.json()["data"]
 
     def add_item(self, variant_id: str, quantity: int) -> Dict[str, Any]:
-        """Adds a product variant to the cart."""
+        """Adds a product variant to the current cart."""
+        url = f"{self.cart_endpoint}/add_item"
         payload = {
-            "variant_id": variant_id,
+            "variant_id": str(variant_id),
             "quantity": quantity
         }
-        response = self.client.post(f"{self.cart_endpoint}/add_item", json=payload, headers=self.cart_headers)
+        headers = {
+            **self.client.headers,
+            "X-Spree-Order-Token": self.cart_token
+        }
+        response = self.client.post(url, json=payload, headers=headers)
         response.raise_for_status()
         return response.json()["data"]
 

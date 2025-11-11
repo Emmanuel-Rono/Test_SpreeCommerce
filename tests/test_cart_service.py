@@ -2,7 +2,8 @@ import pytest
 from services.cart_service import CartService
 from typing import Dict, Any
 
-def test_create_cart(cart_service: CartService):
+
+def test_create_carti(cart_service: CartService):
     data: Dict[str, Any] = cart_service.create_cart()
     assert isinstance(data, dict), f"Expected a dictionary response, got {type(data)}"
     # 2. Key existence and type check (Standard API Response Structure)
