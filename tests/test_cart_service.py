@@ -3,7 +3,7 @@ from services.cart_service import CartService
 from typing import Dict, Any
 
 
-def test_create_carti(cart_service: CartService):
+def test_create_cart(cart_service: CartService):
     data: Dict[str, Any] = cart_service.create_cart()
     assert isinstance(data, dict), f"Expected a dictionary response, got {type(data)}"
     # 2. Key existence and type check (Standard API Response Structure)
@@ -11,8 +11,14 @@ def test_create_carti(cart_service: CartService):
     assert "type" in data, "Response data missing 'type' field."
     assert isinstance(data["id"], str), f"Expected 'id' to be a string, got {type(data['id'])}"
     assert isinstance(data["type"], str), f"Expected 'type' to be a string, got {type(data['type'])}"
+
+
     #Attributes validation
     attributes = data.get("attributes", {})
+
+    print(attributes)
+
+
     assert isinstance(attributes,dict), f"Expected 'attributes' to be a dictionary, got {type(attributes)}"
     expected_keys_in_attributes = [
     "number", "item_total", "total", "subtotal_cents", "store_credit_total_cents",
