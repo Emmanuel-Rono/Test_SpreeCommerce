@@ -15,33 +15,24 @@ def api_client(base_url: str) -> requests.Session:
     })
     return session
 
-
 @pytest.fixture(scope="session")
 def base_url() -> str:
     return settings.BASE_API_URL
-
-
-
 
 @pytest.fixture(scope="session")
 def admin_headers() -> Dict[str, str]:
     return {
         "Authorization": f"Bearer {settings.ADMIN_AUTH_TOKEN}"
     }
-
-
-
 @pytest.fixture(scope="session")
 def customer_headers() -> Dict[str, str]:
     return {
         "Authorization": f"Bearer {settings.CUSTOMER_AUTH_TOKEN}"
     }
 
-
 @pytest.fixture
 def customer_cart(api_client: requests.Session, base_url: str) -> Dict[str, Any]:
     cart_endpoint = f"{base_url}/api/v2/storefront/cart"
-
     # SETUP
     response = api_client.post(cart_endpoint)
     assert response.status_code == 201
@@ -57,7 +48,6 @@ def customer_cart(api_client: requests.Session, base_url: str) -> Dict[str, Any]
         "token": order_token,
         "headers": cart_auth_headers
     }
-
     yield cart_details
     # TEARDOWN
     delete_response = api_client.delete(cart_endpoint, headers=cart_auth_headers)
@@ -76,7 +66,4 @@ def cart_service(api_client:requests.Session, base_url:str) -> CartService:
 @pytest.fixture
 def cart_headers(cart_service: CartService):
     return cart_service.cart_headers
-
-
-
 

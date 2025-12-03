@@ -3,12 +3,9 @@ from typing import Dict, Any
 
 def test_add_item_service(cart_service:CartService):
     cart_service.create_cart()
-
     variant_id = "3"
     quantity = 2
-
     add_item_service_response= cart_service.add_item (variant_id, quantity)
-
     assert isinstance(add_item_service_response, dict), f"Expected Dict got: {type(add_item_service_response)}"
 
     expected_keys = {
@@ -41,14 +38,4 @@ def test_add_item_service(cart_service:CartService):
     relationship = add_item_service_response.get("relationships",{})
     for key in expected_rel_attributes:
         assert key in relationship, f"{key} is not in expected_rel_attributes"
-
     assert type == add_item_service_response["type"]
-
-
-
-
-
-
-
-
-
