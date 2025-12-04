@@ -5,7 +5,7 @@ import requests
 
 class CartService:
     """
-    Servic class to handle all Storefront API operations related to the shopping cart.
+    Service class to handle all Storefront API operations related to the shopping cart.
     Uses dependency injection for client and base URL.
     """
 
